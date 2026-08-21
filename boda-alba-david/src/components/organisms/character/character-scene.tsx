@@ -7,7 +7,6 @@ import {
   Box3,
   EdgesGeometry,
   Mesh,
-  MOUSE,
   OrthographicCamera,
   PerspectiveCamera,
   Vector3,

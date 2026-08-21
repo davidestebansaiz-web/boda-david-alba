@@ -1,17 +1,21 @@
 import styled from "styled-components";
 const Container = styled.article<{ invert?: boolean }>`
-    background: linear-gradient(130deg, rgba(255, 255, 255, 0.8), rgba(246, 234, 223, 0.8));
-    display: grid;
-    grid-template-columns: ${props => props.invert ? "auto 1fr" : "1fr auto"};
+    display: flex; 
     gap: 10px;
     padding: 20px;
-    grid-template-areas: ${props => props.invert ? `
-        "avatar title"
-        "avatar content"
-    ` : `
-        "title avatar"
-        "content avatar"
-    `};
+    
+`;
+
+const Wrapper = styled.div<{ invert?: boolean }>`
+    background: linear-gradient(130deg, rgba(255, 255, 255, 0.8), rgba(246, 234, 223, 0.8));
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 68px;
+    flex-grow: 1;
+    border-radius: 170px;
+    border: solid 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
 const Avatar = styled.div<{ invert?: boolean }>`
@@ -25,6 +29,7 @@ const Avatar = styled.div<{ invert?: boolean }>`
 
 const Title = styled.div<{ invert?: boolean }>`
   grid-area: title;
+  font-size: 29px;
   ${props => props.invert ? `
     text-align: left;
   ` : `
@@ -34,6 +39,7 @@ const Title = styled.div<{ invert?: boolean }>`
 
 const Content = styled.div<{ invert?: boolean }>`
   grid-area: content;
+  font-size: 18px;
   ${props => props.invert ? `
     text-align: left;
   ` : `
@@ -45,8 +51,11 @@ export default function Chat({ title, children, avatar, invert }: { title: strin
     return (
         <Container invert={invert}>
             <Avatar invert={invert}>{avatar}</Avatar>
-            <Title invert={invert}>{title}</Title>
-            <Content invert={invert}>{children}</Content>
+
+            <Wrapper>
+                <Title invert={invert}>{title}</Title>
+                <Content invert={invert}>{children}</Content>
+            </Wrapper>
         </Container>
     );
 }
