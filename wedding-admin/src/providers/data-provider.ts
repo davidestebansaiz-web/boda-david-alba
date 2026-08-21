@@ -14,6 +14,18 @@ interface AdminInvitation {
   qrUpdatedAt: string;
   createdAt: string;
   updatedAt: string;
+  rsvp: {
+    status: "PENDING" | "ACCEPTED" | "DECLINED";
+    attendingCount: number | null;
+    message: string | null;
+    inviteeResponses: Array<{
+      inviteeId: string;
+      attending: boolean;
+      note: string | null;
+    }>;
+    submittedAt: string;
+    updatedAt: string;
+  } | null;
 }
 
 interface UpdateInvitationPayload {

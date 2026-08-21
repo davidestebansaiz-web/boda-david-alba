@@ -3,6 +3,7 @@ import {
   DateField,
   Edit,
   EditButton,
+  FunctionField,
   Labeled,
   List,
   NumberField,
@@ -16,7 +17,7 @@ import {
   useRecordContext,
   useRefresh,
 } from "react-admin";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Chip } from "@mui/material";
 import { useState } from "react";
 
 interface InvitationRecord {
@@ -25,7 +26,29 @@ interface InvitationRecord {
   qrTargetUrl: string;
   qrSvg: string;
   qrUpdatedAt: string;
+  rsvp: {
+    status: "PENDING" | "ACCEPTED" | "DECLINED";
+    attendingCount: number | null;
+  } | null;
 }
+
+const rsvpStatusLabels = {
+  ACCEPTED: { color: "success", label: "Aceptada" },
+  DECLINED: { color: "error", label: "Rechazada" },
+  PENDING: { color: "warning", label: "Pendiente" },
+} as const;
+
+const RsvpStatus = () => {
+  const record = useRecordContext<InvitationRecord>();
+  const status = record?.rsvp?.status;
+
+  if (!status) {
+    return <Chip label="Sin respuesta" color="default" size="small" variant="outlined" />;
+  }
+
+  const presentation = rsvpStatusLabels[status];
+  return <Chip label={presentation.label} color={presentation.color} size="small" />;
+};
 
 const invitationFilters = [<SearchInput key="search" source="q" alwaysOn />];
 
@@ -108,6 +131,14 @@ export const InvitationList = () => (
       <TextField source="token" />
       <TextField source="guestName" />
       <NumberField source="maxGuests" />
+      <FunctionField
+        label="Estado RSVP"
+        render={() => <RsvpStatus />}
+      />
+      <FunctionField
+        label="Asistentes"
+        render={(record: InvitationRecord) => record.rsvp?.attendingCount ?? "-"}
+      />
       <TextField source="adminNotes" emptyText="-" />
       <TextField source="qrTargetUrl" />
       <DateField source="qrUpdatedAt" showTime />
@@ -124,6 +155,13 @@ export const InvitationEdit = () => (
       <TextInput source="token" disabled fullWidth />
       <TextInput source="guestName" required fullWidth />
       <NumberInput source="maxGuests" required min={1} />
+      <Labeled label="Estado RSVP">
+        <RsvpStatus />
+      </Labeled>
+      <FunctionField
+        label="Asistentes confirmados"
+        render={(record: InvitationRecord) => record.rsvp?.attendingCount ?? "-"}
+      />
       <TextInput source="adminNotes" multiline minRows={3} fullWidth />
       <TextInput source="qrTargetUrl" fullWidth />
       <RegenerateQrButton />
