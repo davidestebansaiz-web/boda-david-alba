@@ -130,6 +130,7 @@ describe("wedding-api", () => {
 
     expect(openApiSpec.components?.securitySchemes).toHaveProperty("BearerAuth");
     expect(openApiSpec.paths).toHaveProperty("/admin/auth/login");
+    expect(openApiSpec.paths).toHaveProperty("/public/invitations/accepted/count");
     expect(openApiSpec.components?.schemas?.AdminInvitation?.properties).toHaveProperty("qrTargetUrl");
     expect(openApiSpec.components?.schemas?.AdminInvitation?.properties).toHaveProperty("qrSvg");
     expect(openApiSpec.components?.schemas?.AdminInvitation?.properties).toHaveProperty("qrUpdatedAt");
@@ -213,6 +214,13 @@ describe("wedding-api", () => {
     expect(listResponse.statusCode).toBe(200);
     expect(listResponse.json()).toHaveLength(1);
 
+    const countBeforeRsvp = await app.inject({
+      method: "GET",
+      url: "/public/invitations/accepted/count",
+    });
+    expect(countBeforeRsvp.statusCode).toBe(200);
+    expect(countBeforeRsvp.json()).toEqual({ count: 0 });
+
     const publicLookup = await app.inject({
       method: "GET",
       url: `/public/invitations/${created.token}`,
@@ -238,6 +246,13 @@ describe("wedding-api", () => {
     expect(submitRsvp.statusCode).toBe(200);
     expect(submitRsvp.json().rsvp.status).toBe("ACCEPTED");
     expect(submitRsvp.json().rsvp.inviteeResponses).toHaveLength(3);
+
+    const countAfterRsvp = await app.inject({
+      method: "GET",
+      url: "/public/invitations/accepted/count",
+    });
+    expect(countAfterRsvp.statusCode).toBe(200);
+    expect(countAfterRsvp.json()).toEqual({ count: 1 });
 
     const getById = await app.inject({
       method: "GET",

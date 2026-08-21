@@ -2,6 +2,7 @@ import type {
   PublicInvitationContext,
   PublicRsvpSubmissionResult,
   SubmitInviteeResponseInput,
+  AcceptedInvitationsCount,
 } from "./rsvp-types";
 
 interface ApiErrorPayload {
@@ -26,6 +27,18 @@ const readApiErrorMessage = async (response: Response): Promise<string> => {
   }
 
   return `Request failed with status ${response.status}`;
+};
+
+export const fetchAcceptedInvitationsCount = async (): Promise<AcceptedInvitationsCount> => {
+  const response = await fetch(buildApiUrl("/public/invitations/accepted/count"), {
+    method: "GET",
+  });
+
+  if (!response.ok) {
+    throw new Error(await readApiErrorMessage(response));
+  }
+
+  return (await response.json()) as AcceptedInvitationsCount;
 };
 
 export const fetchPublicInvitationContext = async (token: string): Promise<PublicInvitationContext> => {

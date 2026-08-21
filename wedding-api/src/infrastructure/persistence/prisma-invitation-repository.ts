@@ -200,6 +200,14 @@ export class PrismaInvitationRepository implements InvitationRepository {
     return invitations.map(mapInvitation);
   }
 
+  async countAcceptedInvitations(): Promise<number> {
+    return this.prisma.rsvp.count({
+      where: {
+        status: "ACCEPTED",
+      },
+    });
+  }
+
   async findInvitationById(id: string): Promise<Invitation | null> {
     const invitation = await this.prisma.invitation.findUnique({
       where: { id },

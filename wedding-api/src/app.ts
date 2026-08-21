@@ -5,6 +5,7 @@ import { dirname } from "node:path";
 
 import type { InvitationRepository } from "./application/ports/invitation-repository";
 import { AuthenticateAdminUseCase } from "./application/use-cases/authenticate-admin";
+import { CountAcceptedInvitationsUseCase } from "./application/use-cases/count-accepted-invitations";
 import { CreateAdminInvitationUseCase } from "./application/use-cases/create-admin-invitation";
 import { DeleteAdminInvitationUseCase } from "./application/use-cases/delete-admin-invitation";
 import { GetAdminInvitationByIdUseCase } from "./application/use-cases/get-admin-invitation-by-id";
@@ -72,6 +73,7 @@ export const buildApp = async (options: BuildAppOptions): Promise<FastifyInstanc
 
   const handlers = createOperationHandlers({
     authenticateAdmin,
+    countAcceptedInvitations: new CountAcceptedInvitationsUseCase(repository),
     createAdminInvitation: new CreateAdminInvitationUseCase({
       repository,
       qrCodeGenerator,

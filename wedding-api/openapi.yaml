@@ -13,6 +13,19 @@ tags:
   - name: Admin Invitations
 
 paths:
+  /public/invitations/accepted/count:
+    get:
+      tags: [Public RSVP]
+      operationId: countAcceptedInvitations
+      summary: Count accepted invitations
+      responses:
+        '200':
+          description: Number of invitations with an accepted RSVP
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptedInvitationsCount'
+
   /public/invitations/{token}:
     get:
       tags: [Public RSVP]
@@ -265,6 +278,14 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    AcceptedInvitationsCount:
+      type: object
+      required: [count]
+      properties:
+        count:
+          type: integer
+          minimum: 0
+
     ErrorResponse:
       type: object
       required: [code, message]

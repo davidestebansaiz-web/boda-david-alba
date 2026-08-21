@@ -1,6 +1,7 @@
 import type { RouteHandlerMethod } from "fastify";
 
 import { AuthenticateAdminUseCase } from "../../application/use-cases/authenticate-admin";
+import { CountAcceptedInvitationsUseCase } from "../../application/use-cases/count-accepted-invitations";
 import { CreateAdminInvitationUseCase } from "../../application/use-cases/create-admin-invitation";
 import { DeleteAdminInvitationUseCase } from "../../application/use-cases/delete-admin-invitation";
 import { GetAdminInvitationByIdUseCase } from "../../application/use-cases/get-admin-invitation-by-id";
@@ -19,6 +20,7 @@ export type OperationHandlers = Record<string, RouteHandlerMethod>;
 
 export interface OperationDependencies {
   authenticateAdmin: AuthenticateAdminUseCase;
+  countAcceptedInvitations: CountAcceptedInvitationsUseCase;
   createAdminInvitation: CreateAdminInvitationUseCase;
   listAdminInvitations: ListAdminInvitationsUseCase;
   getAdminInvitationById: GetAdminInvitationByIdUseCase;
@@ -103,6 +105,11 @@ export const createOperationHandlers = (deps: OperationDependencies): OperationH
     const { token } = request.params as { token: string };
     const context = await deps.getPublicInvitationByToken.execute(token);
     reply.status(200).send(toPublicInvitationContextResponse(context));
+  },
+
+  countAcceptedInvitations: async (_request, reply) => {
+    const count = await deps.countAcceptedInvitations.execute();
+    reply.status(200).send({ count });
   },
 
   submitPublicRsvpByToken: async (request, reply) => {

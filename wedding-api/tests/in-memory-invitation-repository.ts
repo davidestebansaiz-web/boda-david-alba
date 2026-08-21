@@ -96,6 +96,10 @@ export class InMemoryInvitationRepository implements InvitationRepository {
       .map(cloneInvitation);
   }
 
+  async countAcceptedInvitations(): Promise<number> {
+    return [...this.invitations.values()].filter((invitation) => invitation.rsvp?.status === "ACCEPTED").length;
+  }
+
   async findInvitationById(id: string): Promise<Invitation | null> {
     const invitation = this.invitations.get(id);
     return invitation ? cloneInvitation(invitation) : null;

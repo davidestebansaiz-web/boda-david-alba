@@ -26,6 +26,7 @@ export interface SaveRsvpByTokenInput {
 export interface InvitationRepository {
   createInvitation(input: CreateInvitationInput): Promise<Invitation>;
   listInvitations(): Promise<Invitation[]>;
+  countAcceptedInvitations(): Promise<number>;
   findInvitationById(id: string): Promise<Invitation | null>;
   findInvitationByToken(token: string): Promise<Invitation | null>;
   updateInvitation(id: string, input: UpdateInvitationInput): Promise<Invitation | null>;

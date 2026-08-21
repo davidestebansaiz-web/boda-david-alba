@@ -20,6 +20,7 @@ import { LineSegments2 } from "three/addons/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.js";
 
 import sceneUrl from "../../../assets/models/escena.glb?url";
+import Person from '../person'
 
 const SceneSection = styled.section`
   position: relative;
@@ -130,6 +131,7 @@ function WeddingModel({ lineArt, lineColor, lineStrength, onLoaded }: WeddingMod
 
   const { exteriorMeshes, houseCenter, model, scale } = useMemo(() => {
     const clonedScene = gltf.scene.clone(true);
+
     const sceneMeshes: Mesh[] = [];
     const sceneEdgeMaterial = new LineMaterial({
       color: lineColor,
@@ -443,6 +445,7 @@ export function WeddingScene() {
             onLoaded={handleLoaded}
           />
         </Suspense>
+        <Person position={[0, 0, 0]} />
         <mesh position={[0, -1.46, 0]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
           <circleGeometry args={[5, 64]} />
           <shadowMaterial opacity={0.18} />

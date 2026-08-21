@@ -36,3 +36,7 @@ export interface SubmitInviteeResponseInput {
   attending: boolean;
   note: string | null;
 }
+
+export interface AcceptedInvitationsCount {
+  count: number;
+}
