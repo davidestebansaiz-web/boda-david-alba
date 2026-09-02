@@ -4,7 +4,7 @@ import { Hero } from "./components/molecules/hero";
 import { RsvpByToken } from "./components/organisms/rsvp-by-token/rsvp-by-token";
 import { WeddingScene } from "./components/organisms/wedding-scene/wedding-scene";
 import { Character } from "./components/organisms/character/character-scene";
-import ChatList from "./components/molecules/chat-list";
+import ChatList, { type ChatOption } from "./components/molecules/chat-list";
 
 const AppShell = styled.main`
   min-height: 100vh;
@@ -29,13 +29,21 @@ const ChatListStyled = styled(ChatList)`
   width: 100%;
 `;
 
+const conversations: ChatOption[] = [
+  {
+    id: "welcome",
+    title: "Chat 1",
+    children: <p>Content for Chat 1</p>,
+    avatar: <Character />,
+    invert: true,
+  },
+];
+
 export default function App() {
   return (
     <AppShell>
       <WeddingScene />
-      <ChatListStyled options={[
-        { title: "Chat 1", children: <p>Content for Chat 1</p>, avatar: <Character />, invert: true },
-      ]} />
+      <ChatListStyled options={conversations} />
       <ExistingSections>
         <Hero />
         <RsvpByToken />

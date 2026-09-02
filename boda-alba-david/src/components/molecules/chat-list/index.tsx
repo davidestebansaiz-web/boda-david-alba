@@ -1,20 +1,26 @@
 import styled from "styled-components";
-import Chat from "../chat";
 
-const Container = styled.article<{ invert?: boolean }>`
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
+import Chat, { type ChatProps } from "../chat";
+
+const ChatListContainer = styled.section`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
 `;
 
-export default function ChatList({ options, className }: { options: { title: string; children: React.ReactNode, avatar?: React.ReactNode, invert?: boolean }[], className?: string }) {
-    return (
-        <Container className={className}>
-            {options.map((option, index) => (
-                <Chat key={index} title={option.title} avatar={option.avatar} invert={option.invert}>
-                    {option.children}
-                </Chat>
-            ))}
-        </Container>
-    );
+export type ChatOption = ChatProps & {
+  id: string;
+};
+
+type ChatListProps = {
+  options: ChatOption[];
+  className?: string;
+};
+
+export default function ChatList({ options, className }: ChatListProps) {
+  return (
+    <ChatListContainer className={className} aria-label="Conversaciones">
+      {options.map(({ id, ...chatProps }) => <Chat key={id} {...chatProps} />)}
+    </ChatListContainer>
+  );
 }

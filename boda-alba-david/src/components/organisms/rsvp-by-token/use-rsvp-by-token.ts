@@ -27,7 +27,7 @@ interface SubmitInviteesMutationInput {
   invitees: SubmitInviteeResponseInput[];
 }
 
-interface UseRsvpByTokenResult {
+export interface UseRsvpByTokenResult {
   view: RsvpByTokenView;
   errorMessage: string | null;
   tokenContext: PublicInvitationContext | null;
@@ -44,7 +44,7 @@ interface UseRsvpByTokenResult {
 const isErrorWithMessage = (error: unknown): error is Error =>
   typeof error === "object" && error !== null && "message" in error;
 
-const mapContextToInviteeFormValues = (context: PublicInvitationContext): InviteeFormValues => {
+export const mapContextToInviteeFormValues = (context: PublicInvitationContext): InviteeFormValues => {
   const responsesById = new Map(context.currentResponses.map((response) => [response.inviteeId, response]));
 
   return {
@@ -61,7 +61,7 @@ const mapContextToInviteeFormValues = (context: PublicInvitationContext): Invite
   };
 };
 
-const mapInviteeFormToPayload = (values: InviteeFormValues): SubmitInviteeResponseInput[] =>
+export const mapInviteeFormToPayload = (values: InviteeFormValues): SubmitInviteeResponseInput[] =>
   values.invitees.map((invitee) => {
     const note = invitee.note.trim();
 

@@ -29,45 +29,34 @@ const readApiErrorMessage = async (response: Response): Promise<string> => {
   return `Request failed with status ${response.status}`;
 };
 
-export const fetchAcceptedInvitationsCount = async (): Promise<AcceptedInvitationsCount> => {
-  const response = await fetch(buildApiUrl("/public/invitations/accepted/count"), {
-    method: "GET",
-  });
+const requestJson = async <ResponseBody>(path: string, init?: RequestInit): Promise<ResponseBody> => {
+  const response = await fetch(buildApiUrl(path), init);
 
   if (!response.ok) {
     throw new Error(await readApiErrorMessage(response));
   }
 
-  return (await response.json()) as AcceptedInvitationsCount;
+  return (await response.json()) as ResponseBody;
 };
 
-export const fetchPublicInvitationContext = async (token: string): Promise<PublicInvitationContext> => {
-  const response = await fetch(buildApiUrl(`/public/invitations/${encodeURIComponent(token)}`), {
+export const fetchAcceptedInvitationsCount = (): Promise<AcceptedInvitationsCount> =>
+  requestJson("/public/invitations/accepted/count", {
     method: "GET",
   });
 
-  if (!response.ok) {
-    throw new Error(await readApiErrorMessage(response));
-  }
+export const fetchPublicInvitationContext = (token: string): Promise<PublicInvitationContext> =>
+  requestJson(`/public/invitations/${encodeURIComponent(token)}`, {
+    method: "GET",
+  });
 
-  return (await response.json()) as PublicInvitationContext;
-};
-
-export const submitPublicRsvp = async (
+export const submitPublicRsvp = (
   token: string,
   invitees: SubmitInviteeResponseInput[],
-): Promise<PublicRsvpSubmissionResult> => {
-  const response = await fetch(buildApiUrl(`/public/invitations/${encodeURIComponent(token)}/rsvp`), {
+): Promise<PublicRsvpSubmissionResult> =>
+  requestJson(`/public/invitations/${encodeURIComponent(token)}/rsvp`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
     },
     body: JSON.stringify({ invitees }),
   });
-
-  if (!response.ok) {
-    throw new Error(await readApiErrorMessage(response));
-  }
-
-  return (await response.json()) as PublicRsvpSubmissionResult;
-};
