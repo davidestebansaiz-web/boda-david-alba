@@ -153,17 +153,36 @@ function WeddingModel({ lineArt, lineColor, lineStrength, onLoaded }: WeddingMod
     clonedScene.traverse((child) => {
       if (child instanceof Mesh) {
         sceneMeshes.push(child);
+
         child.castShadow = true;
         child.receiveShadow = true;
+
+        const materials = Array.isArray(child.material)
+          ? child.material
+          : [child.material];
+
+        materials.forEach((material) => {
+          // Solo materiales que tengan transparencia
+          if ("map" in material && material.map?.channel !== undefined) {
+            if ("alphaTest" in material) {
+              material.alphaTest = 0.5;
+            }
+
+            material.transparent = false;
+            material.depthWrite = true;
+            material.depthTest = true;
+            material.needsUpdate = true;
+          }
+        });
       }
     });
-
     const lineArtMeshes = sceneMeshes.filter((mesh) => lineArtMeshNames.has(mesh.name));
     const houseExteriorMeshes = sceneMeshes.filter((mesh) => {
       const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
       const isHouseMaterial = materials.some((material) => material.name === "casa" || material.name === "techo");
       return mesh.name !== "ventana" && isHouseMaterial;
     });
+
     clonedScene.updateMatrixWorld(true);
     const houseBounds = new Box3();
     houseExteriorMeshes.forEach((mesh) => houseBounds.expandByObject(mesh));
