@@ -39,10 +39,13 @@ const conversations: ChatOption[] = [
   },
 ];
 
+// Sustituir por el valor del endpoint cuando esté disponible.
+const numberOfGuests = 12;
+
 export default function App() {
   return (
     <AppShell>
-      <WeddingScene />
+      <WeddingScene numberOfGuests={numberOfGuests} />
       <ChatListStyled options={conversations} />
       <ExistingSections>
         <Hero />

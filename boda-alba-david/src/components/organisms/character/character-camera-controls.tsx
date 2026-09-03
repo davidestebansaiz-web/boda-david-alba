@@ -54,13 +54,13 @@ export function CharacterCameraControls({ initialTarget }: CharacterCameraContro
     const controls = new OrbitControls(camera, gl.domElement);
     camera.position.copy(INITIAL_CAMERA_POSITION);
     controlsRef.current = controls;
-    const gui = createCameraGui(camera);
+    //const gui = createCameraGui(camera);
     const preventContextMenu = (event: MouseEvent) => event.preventDefault();
     gl.domElement.addEventListener("contextmenu", preventContextMenu);
 
     return () => {
       gl.domElement.removeEventListener("contextmenu", preventContextMenu);
-      gui.destroy();
+      //gui.destroy();
       controls.dispose();
       controlsRef.current = null;
     };

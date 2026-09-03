@@ -1,11 +1,12 @@
 import { Outlines } from "@react-three/drei";
 import { createPortal, useLoader } from "@react-three/fiber";
 import { Fragment, useEffect, useMemo } from "react";
-import { Box3, Mesh, Texture, Vector3 } from "three";
+import { Box3, DoubleSide, Mesh, Object3D, Texture, Vector3 } from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 import sceneUrl from "../../../assets/models/escena.glb?url";
 import { addLineArt, getMeshesByName, normalizeModel } from "../three-scene/model-utils";
+import { CharacterManager, type CharacterPart } from "./crowd/character-manager";
 
 const MODEL_Y_POSITION = -1.45;
 const LINE_ART_MESH_NAMES = new Set(["Cube", "Cube.001", "Cube.004", "ventana"]);
@@ -14,8 +15,17 @@ type WeddingModelProps = {
   lineArt: boolean;
   lineColor: number;
   lineStrength: number;
+  numberOfGuests: number;
   onLoaded: (houseCenter: Vector3) => void;
 };
+
+function getRequiredMesh(model: Object3D, name: string): Mesh {
+  const object = model.getObjectByName(name);
+  if (!(object instanceof Mesh)) {
+    throw new Error(`No se encontró el mesh requerido "${name}" en escena.glb.`);
+  }
+  return object;
+}
 
 function configureTransparentTextures(meshes: Mesh[]): void {
   meshes.forEach((mesh) => {
@@ -39,12 +49,38 @@ function isHouseExterior(mesh: Mesh): boolean {
   return mesh.name !== "ventana" && belongsToHouse;
 }
 
-export function WeddingModel({ lineArt, lineColor, lineStrength, onLoaded }: WeddingModelProps) {
+export function WeddingModel({
+  lineArt,
+  lineColor,
+  lineStrength,
+  numberOfGuests,
+  onLoaded,
+}: WeddingModelProps) {
   const gltf = useLoader(GLTFLoader, sceneUrl);
   const preparedModel = useMemo(() => {
     const normalizedModel = normalizeModel(gltf.scene);
     const lineArtMeshes = getMeshesByName(normalizedModel.meshes, LINE_ART_MESH_NAMES);
     const exteriorMeshes = normalizedModel.meshes.filter(isHouseExterior);
+    const navigationMesh = getRequiredMesh(normalizedModel.model, "area");
+    const characterParts: CharacterPart[] = [
+      { mesh: getRequiredMesh(normalizedModel.model, "persona") },
+      { mesh: getRequiredMesh(normalizedModel.model, "pelo") },
+    ];
+
+    navigationMesh.material = Array.isArray(navigationMesh.material)
+      ? navigationMesh.material.map((material) => material.clone())
+      : navigationMesh.material.clone();
+    const navigationMaterials = Array.isArray(navigationMesh.material)
+      ? navigationMesh.material
+      : [navigationMesh.material];
+    navigationMaterials.forEach((material) => {
+      material.side = DoubleSide;
+    });
+    // Direct raycasting still works while the navigation-only mesh is invisible.
+    navigationMesh.visible = false;
+    characterParts.forEach(({ mesh }) => {
+      mesh.visible = false;
+    });
 
     configureTransparentTextures(normalizedModel.meshes);
     normalizedModel.model.updateMatrixWorld(true);
@@ -55,7 +91,14 @@ export function WeddingModel({ lineArt, lineColor, lineStrength, onLoaded }: Wed
       .multiplyScalar(normalizedModel.scale)
       .add(new Vector3(0, MODEL_Y_POSITION, 0));
 
-    return { ...normalizedModel, exteriorMeshes, houseCenter, lineArtMeshes };
+    return {
+      ...normalizedModel,
+      characterParts,
+      exteriorMeshes,
+      houseCenter,
+      lineArtMeshes,
+      navigationMesh,
+    };
   }, [gltf.scene]);
 
   useEffect(() => onLoaded(preparedModel.houseCenter), [onLoaded, preparedModel.houseCenter]);
@@ -73,6 +116,14 @@ export function WeddingModel({ lineArt, lineColor, lineStrength, onLoaded }: Wed
   return (
     <group position={[0, MODEL_Y_POSITION, 0]} scale={preparedModel.scale}>
       <primitive object={preparedModel.model} />
+      {createPortal(
+        <CharacterManager
+          area={preparedModel.navigationMesh}
+          characterParts={preparedModel.characterParts}
+          numberOfGuests={numberOfGuests}
+        />,
+        preparedModel.model,
+      )}
       {lineArt && preparedModel.exteriorMeshes.map((mesh) => (
         <Fragment key={mesh.uuid}>
           {createPortal(

@@ -8,8 +8,8 @@ export type SceneEffectsSettings = {
 
 export const DEFAULT_SCENE_EFFECTS: SceneEffectsSettings = {
   lineArt: true,
-  lineColor: 0xbc8973,
-  lineStrength: 3,
+  lineColor: 0x000000,
+  lineStrength: 1,
   pixelation: true,
   pixelSize: 2,
 };

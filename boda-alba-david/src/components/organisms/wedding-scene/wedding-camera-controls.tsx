@@ -4,26 +4,30 @@ import { useEffect, useRef, type RefObject } from "react";
 import { MOUSE, OrthographicCamera, PerspectiveCamera, Vector3 } from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-import { enableRightButtonPan } from "../three-scene/pointer-controls";
 import { DEFAULT_SCENE_EFFECTS, type SceneEffectsSettings } from "../three-scene/scene-types";
+import {
+  WEDDING_CAMERA_POSITION,
+  WEDDING_CAMERA_TARGET,
+  WEDDING_CAMERA_ZOOM,
+} from "./wedding-camera-settings";
 
-export const WEDDING_CAMERA_ZOOM = 450;
-const INITIAL_CAMERA_OFFSET = new Vector3(6, 4.9, 6);
+const INITIAL_CAMERA_POSITION = new Vector3(...WEDDING_CAMERA_POSITION);
+const INITIAL_CAMERA_TARGET = new Vector3(...WEDDING_CAMERA_TARGET);
 
 type WeddingCameraControlsProps = {
   guiContainerRef: RefObject<HTMLDivElement | null>;
-  initialTarget: Vector3;
   onEffectsChange: (changes: Partial<SceneEffectsSettings>) => void;
 };
 
-function configureOrbitControls(controls: OrbitControls, initialTarget: Vector3): void {
-  controls.enableDamping = true;
-  controls.enableRotate = true;
-  controls.enablePan = true;
-  controls.enableZoom = true;
-  controls.screenSpacePanning = true;
+function configureOrbitControls(controls: OrbitControls): void {
+  controls.enabled = false;
+  controls.enableDamping = false;
+  controls.enableRotate = false;
+  controls.enablePan = false;
+  controls.enableZoom = false;
+  controls.screenSpacePanning = false;
   controls.panSpeed = 1.5;
-  controls.zoomToCursor = true;
+  controls.zoomToCursor = false;
   controls.zoomSpeed = 1.1;
   controls.minDistance = 0.2;
   controls.maxDistance = 100;
@@ -33,9 +37,9 @@ function configureOrbitControls(controls: OrbitControls, initialTarget: Vector3)
   controls.maxPolarAngle = Math.PI * 0.98;
   controls.mouseButtons.LEFT = MOUSE.ROTATE;
   controls.mouseButtons.MIDDLE = MOUSE.DOLLY;
-  controls.mouseButtons.RIGHT = MOUSE.PAN;
-  controls.object.position.copy(initialTarget).add(INITIAL_CAMERA_OFFSET);
-  controls.target.copy(initialTarget);
+  controls.mouseButtons.RIGHT = null;
+  controls.object.position.copy(INITIAL_CAMERA_POSITION);
+  controls.target.copy(INITIAL_CAMERA_TARGET);
   controls.update();
 }
 
@@ -90,13 +94,12 @@ function addCameraReadouts(
 function resetCamera(
   camera: OrthographicCamera | PerspectiveCamera,
   controls: OrbitControls,
-  target: Vector3,
 ): void {
-  camera.position.copy(target).add(INITIAL_CAMERA_OFFSET);
+  camera.position.copy(INITIAL_CAMERA_POSITION);
   if (camera instanceof PerspectiveCamera) camera.fov = 42;
   if (camera instanceof OrthographicCamera) camera.zoom = WEDDING_CAMERA_ZOOM;
   camera.updateProjectionMatrix();
-  controls.target.copy(target);
+  controls.target.copy(INITIAL_CAMERA_TARGET);
   controls.update();
 }
 
@@ -104,7 +107,6 @@ function createCameraGui(
   container: HTMLDivElement | null,
   camera: OrthographicCamera | PerspectiveCamera,
   controls: OrbitControls,
-  initialTarget: Vector3,
   onEffectsChange: WeddingCameraControlsProps["onEffectsChange"],
 ): GUI {
   const gui = new GUI({ container: container ?? undefined, title: "Cámara", width: 300 });
@@ -130,7 +132,7 @@ function createCameraGui(
         `camera={{ position: [${x.toFixed(2)}, ${y.toFixed(2)}, ${z.toFixed(2)}], ${projection} }}`,
       );
     },
-    restablecer: () => resetCamera(camera, controls, initialTarget),
+    restablecer: () => resetCamera(camera, controls),
   };
   gui.add(actions, "copiarPosicion").name("Copiar posición");
   gui.add(actions, "restablecer").name("Restablecer cámara");
@@ -139,7 +141,6 @@ function createCameraGui(
 
 export function WeddingCameraControls({
   guiContainerRef,
-  initialTarget,
   onEffectsChange,
 }: WeddingCameraControlsProps) {
   const { camera, gl } = useThree();
@@ -149,24 +150,25 @@ export function WeddingCameraControls({
     if (!(camera instanceof OrthographicCamera || camera instanceof PerspectiveCamera)) return;
 
     const controls = new OrbitControls(camera, gl.domElement);
-    configureOrbitControls(controls, initialTarget);
+    configureOrbitControls(controls);
     controlsRef.current = controls;
-    const disableRightButtonPan = enableRightButtonPan(gl.domElement, controls);
+    const preventContextMenu = (event: MouseEvent) => event.preventDefault();
+    gl.domElement.addEventListener("contextmenu", preventContextMenu);
     const gui = createCameraGui(
       guiContainerRef.current,
       camera,
       controls,
-      initialTarget,
       onEffectsChange,
     );
+    gui.hide();
 
     return () => {
-      disableRightButtonPan();
+      gl.domElement.removeEventListener("contextmenu", preventContextMenu);
       gui.destroy();
       controls.dispose();
       controlsRef.current = null;
     };
-  }, [camera, gl.domElement, guiContainerRef, initialTarget, onEffectsChange]);
+  }, [camera, gl.domElement, guiContainerRef, onEffectsChange]);
 
   useFrame(() => controlsRef.current?.update());
   return null;
