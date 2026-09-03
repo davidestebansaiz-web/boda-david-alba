@@ -1,7 +1,8 @@
 import styled from "styled-components";
 
-export const ChatContainer = styled.article`
+export const ChatContainer = styled.article<{ $invert: boolean }>`
   display: flex;
+  flex-direction: ${({ $invert }) => ($invert ? "row-reverse" : "row")};
   gap: 10px;
   padding: 20px;
 `;
@@ -19,7 +20,7 @@ export const MessageBubble = styled.div`
 `;
 
 const AlignedContent = styled.div<{ $invert: boolean }>`
-  text-align: ${({ $invert }) => ($invert ? "left" : "right")};
+  text-align: ${({ $invert }) => ($invert ? "right" : "left")};
 `;
 
 export const Avatar = styled(AlignedContent)``;

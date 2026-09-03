@@ -9,8 +9,7 @@ export const SceneSection = styled.section`
   canvas {
     display: block;
     width: 100% !important;
-    min-height: 70vh;
-    min-height: 70svh;
+    min-height: 130vh;
     cursor: grab;
     touch-action: pan-y;
   }

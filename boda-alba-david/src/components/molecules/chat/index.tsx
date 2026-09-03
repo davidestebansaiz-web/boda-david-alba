@@ -11,7 +11,7 @@ export type ChatProps = {
 
 export default function Chat({ title, children, avatar, invert = false }: ChatProps) {
   return (
-    <ChatContainer>
+    <ChatContainer $invert={invert}>
       {avatar && <Avatar $invert={invert}>{avatar}</Avatar>}
       <MessageBubble>
         <Title $invert={invert}>{title}</Title>

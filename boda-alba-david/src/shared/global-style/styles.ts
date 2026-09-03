@@ -19,7 +19,7 @@ export const GlobalStyle = createGlobalStyle`
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: radial-gradient(circle at 15% 20%, #ffe6d4, #f3dcc9 35%, #f0d9c8 70%);
+    background-color: #93b7f2
   }
 
   * {

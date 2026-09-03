@@ -1,7 +1,5 @@
 import styled from "styled-components";
 
-import ChatList from "../components/molecules/chat-list";
-
 export const AppShell = styled.main`
   min-height: 100vh;
 `;
@@ -16,8 +14,4 @@ export const ExistingSections = styled.div`
   @media (max-width: 640px) {
     padding: 1.15rem 0.9rem 2rem;
   }
-`;
-
-export const ChatListStyled = styled(ChatList)`
- 
 `;
