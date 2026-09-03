@@ -1,15 +1,10 @@
 import type { FormEventHandler } from "react";
 import type { UseFormRegisterReturn } from "react-hook-form";
-import styled from "styled-components";
 
-import { Button } from "../atoms/button";
-import { Input } from "../atoms/input";
-import { Label } from "../atoms/label";
-
-const FormContainer = styled.form`
-  display: grid;
-  gap: 0.9rem;
-`;
+import { Button } from "../../atoms/button";
+import { Input } from "../../atoms/input";
+import { Label } from "../../atoms/label";
+import { FormContainer } from "./styles";
 
 interface TokenFormProps {
   onSubmit: FormEventHandler<HTMLFormElement>;

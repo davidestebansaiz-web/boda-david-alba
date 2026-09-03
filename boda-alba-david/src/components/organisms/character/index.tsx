@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { useSceneState } from "../three-scene/use-scene-state";
 import { CharacterCameraControls } from "./character-camera-controls";
 import { CharacterModel } from "./character-model";
-import { CharacterSceneSection, LoadingMessage } from "./character-scene.styles";
+import { CharacterSceneSection, LoadingMessage } from "./styles";
 
 function CharacterLighting() {
   return (

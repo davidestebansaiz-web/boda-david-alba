@@ -1,25 +1,10 @@
-import styled from "styled-components";
-
 import { Button } from "../../atoms/button";
 import { Card } from "../../atoms/card";
-import { BodyText, ErrorText, Heading } from "../../atoms/text";
+import { ErrorText, Heading } from "../../atoms/text";
 import { InviteeRsvpRow } from "../../molecules/invitee-rsvp-row";
 import { TokenForm } from "../../molecules/token-form";
+import { CardSubtitle, FormContainer, FormStack } from "./styles";
 import type { UseRsvpByTokenResult } from "./use-rsvp-by-token";
-
-const FormContainer = styled.form`
-  display: grid;
-  gap: 0.9rem;
-`;
-
-const CardSubtitle = styled(BodyText)`
-  margin-top: 0.55rem;
-`;
-
-const FormStack = styled.div`
-  display: grid;
-  gap: 0.9rem;
-`;
 
 const VALIDATION_FALLBACK = "Revisa los datos del formulario y vuelve a intentarlo.";
 

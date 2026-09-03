@@ -1,12 +1,5 @@
-import styled from "styled-components";
-
 import Chat, { type ChatProps } from "../chat";
-
-const ChatListContainer = styled.section`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-`;
+import { ChatListContainer } from "./styles";
 
 export type ChatOption = ChatProps & {
   id: string;

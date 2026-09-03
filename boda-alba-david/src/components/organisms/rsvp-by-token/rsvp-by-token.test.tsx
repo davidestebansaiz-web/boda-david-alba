@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { PublicInvitationContext } from "../../../services/rsvp-types";
-import { RsvpByToken } from "./rsvp-by-token";
+import { RsvpByToken } from ".";
 
 const fetchMock = vi.fn<typeof fetch>();
 

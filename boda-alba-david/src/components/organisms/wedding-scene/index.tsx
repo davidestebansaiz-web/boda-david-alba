@@ -9,7 +9,7 @@ import { WeddingModel } from "./wedding-model";
 import {
   LoadingMessage,
   SceneSection,
-} from "./wedding-scene.styles";
+} from "./styles";
 
 function SceneLighting() {
   return (
