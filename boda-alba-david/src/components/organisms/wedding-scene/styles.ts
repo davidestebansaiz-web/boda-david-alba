@@ -6,10 +6,6 @@ export const SceneSection = styled.section`
   min-height: 70vh;
   min-height: 70svh;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.82), transparent 38%),
-    linear-gradient(180deg, #f4e6d8 0%, #ead2bf 100%);
-
   canvas {
     display: block;
     width: 100% !important;

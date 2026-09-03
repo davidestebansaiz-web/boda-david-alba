@@ -19,8 +19,5 @@ export const ExistingSections = styled.div`
 `;
 
 export const ChatListStyled = styled(ChatList)`
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 100%;
+ 
 `;

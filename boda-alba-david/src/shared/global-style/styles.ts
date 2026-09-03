@@ -1,6 +1,16 @@
 import { createGlobalStyle } from "styled-components";
 
+import satisfyFontUrl from "../../assets/fonts/Satisfy/Satisfy-Regular.ttf?url";
+
 export const GlobalStyle = createGlobalStyle`
+  @font-face {
+    font-family: "Satisfy";
+    src: url(${satisfyFontUrl}) format("truetype");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+  }
+
   :root {
     font-family: "Source Sans 3", "Trebuchet MS", "Gill Sans", sans-serif;
     line-height: 1.5;

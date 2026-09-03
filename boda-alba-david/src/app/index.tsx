@@ -1,5 +1,6 @@
 import { Hero } from "../components/molecules/hero";
 import { type ChatOption } from "../components/molecules/chat-list";
+import { WeddingIntro } from "../components/molecules/wedding-intro";
 import { Character } from "../components/organisms/character";
 import { RsvpByToken } from "../components/organisms/rsvp-by-token";
 import { WeddingScene } from "../components/organisms/wedding-scene";
@@ -21,6 +22,7 @@ const numberOfGuests = 12;
 export default function App() {
   return (
     <AppShell>
+      <WeddingIntro />
       <WeddingScene numberOfGuests={numberOfGuests} />
       <ChatListStyled options={conversations} />
       <ExistingSections>
