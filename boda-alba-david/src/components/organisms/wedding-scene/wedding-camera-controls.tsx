@@ -1,7 +1,15 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import GUI from "lil-gui";
 import { useEffect, useRef, type RefObject } from "react";
-import { MOUSE, OrthographicCamera, PerspectiveCamera, Vector3 } from "three";
+import {
+  MathUtils,
+  MOUSE,
+  OrthographicCamera,
+  PerspectiveCamera,
+  Spherical,
+  Vector2,
+  Vector3,
+} from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 import { DEFAULT_SCENE_EFFECTS, type SceneEffectsSettings } from "../three-scene/scene-types";
@@ -13,6 +21,12 @@ import {
 
 const INITIAL_CAMERA_POSITION = new Vector3(...WEDDING_CAMERA_POSITION);
 const INITIAL_CAMERA_TARGET = new Vector3(...WEDDING_CAMERA_TARGET);
+const INITIAL_CAMERA_SPHERICAL = new Spherical().setFromVector3(
+  INITIAL_CAMERA_POSITION.clone().sub(INITIAL_CAMERA_TARGET),
+);
+const MAX_HORIZONTAL_ROTATION = MathUtils.degToRad(2.5);
+const MAX_VERTICAL_ROTATION = MathUtils.degToRad(1.5);
+const POINTER_SMOOTHING = 5;
 
 type WeddingCameraControlsProps = {
   guiContainerRef: RefObject<HTMLDivElement | null>;
@@ -49,23 +63,53 @@ function addEffectsControls(
 ): void {
   const folder = gui.addFolder("Tratamiento visual");
   const values = {
+    anguloAristas: DEFAULT_SCENE_EFFECTS.lineThresholdAngle,
+    anguloSuavizado: MathUtils.radToDeg(DEFAULT_SCENE_EFFECTS.lineAngle),
     lineart: DEFAULT_SCENE_EFFECTS.lineArt,
     colorLinea: DEFAULT_SCENE_EFFECTS.lineColor,
     intensidadLinea: DEFAULT_SCENE_EFFECTS.lineStrength,
+    opacidadLinea: DEFAULT_SCENE_EFFECTS.lineOpacity,
+    ordenRender: DEFAULT_SCENE_EFFECTS.lineRenderOrder,
     pixelado: DEFAULT_SCENE_EFFECTS.pixelation,
+    polygonOffset: DEFAULT_SCENE_EFFECTS.linePolygonOffset,
+    polygonOffsetFactor: DEFAULT_SCENE_EFFECTS.linePolygonOffsetFactor,
+    screenSpace: DEFAULT_SCENE_EFFECTS.lineScreenspace,
     tamañoPixel: DEFAULT_SCENE_EFFECTS.pixelSize,
+    toneMapped: DEFAULT_SCENE_EFFECTS.lineToneMapped,
+    transparencia: DEFAULT_SCENE_EFFECTS.lineTransparent,
   };
 
-  folder.add(values, "pixelado").name("Pixelado")
-    .onChange((value: boolean) => onEffectsChange({ pixelation: value }));
-  folder.add(values, "tamañoPixel", 1, 24, 1).name("Tamaño píxel")
-    .onChange((value: number) => onEffectsChange({ pixelSize: value }));
-  folder.add(values, "lineart").name("Lineart")
+  const lineArtFolder = folder.addFolder("Lineart");
+  lineArtFolder.add(values, "lineart").name("Activar")
     .onChange((value: boolean) => onEffectsChange({ lineArt: value }));
-  folder.add(values, "intensidadLinea", 0.5, 40, 0.5).name("Grosor línea")
-    .onChange((value: number) => onEffectsChange({ lineStrength: value }));
-  folder.addColor(values, "colorLinea").name("Color línea")
+  lineArtFolder.addColor(values, "colorLinea").name("Color")
     .onChange((value: number) => onEffectsChange({ lineColor: value }));
+  lineArtFolder.add(values, "intensidadLinea", 0.5, 40, 0.5).name("Grosor")
+    .onChange((value: number) => onEffectsChange({ lineStrength: value }));
+  lineArtFolder.add(values, "opacidadLinea", 0, 1, 0.01).name("Opacidad")
+    .onChange((value: number) => onEffectsChange({ lineOpacity: value }));
+  lineArtFolder.add(values, "transparencia").name("Transparencia")
+    .onChange((value: boolean) => onEffectsChange({ lineTransparent: value }));
+  lineArtFolder.add(values, "screenSpace").name("Screen space")
+    .onChange((value: boolean) => onEffectsChange({ lineScreenspace: value }));
+  lineArtFolder.add(values, "anguloSuavizado", 0, 180, 1).name("Ángulo suavizado")
+    .onChange((value: number) => onEffectsChange({ lineAngle: MathUtils.degToRad(value) }));
+  lineArtFolder.add(values, "anguloAristas", 0, 180, 1).name("Ángulo aristas")
+    .onChange((value: number) => onEffectsChange({ lineThresholdAngle: value }));
+  lineArtFolder.add(values, "toneMapped").name("Tone mapping")
+    .onChange((value: boolean) => onEffectsChange({ lineToneMapped: value }));
+  lineArtFolder.add(values, "polygonOffset").name("Polygon offset")
+    .onChange((value: boolean) => onEffectsChange({ linePolygonOffset: value }));
+  lineArtFolder.add(values, "polygonOffsetFactor", -10, 10, 0.1).name("Factor offset")
+    .onChange((value: number) => onEffectsChange({ linePolygonOffsetFactor: value }));
+  lineArtFolder.add(values, "ordenRender", -20, 20, 1).name("Orden render")
+    .onChange((value: number) => onEffectsChange({ lineRenderOrder: value }));
+
+  const pixelationFolder = folder.addFolder("Pixelado");
+  pixelationFolder.add(values, "pixelado").name("Activar")
+    .onChange((value: boolean) => onEffectsChange({ pixelation: value }));
+  pixelationFolder.add(values, "tamañoPixel", 0, 64, 2).name("Granularidad")
+    .onChange((value: number) => onEffectsChange({ pixelSize: value }));
 }
 
 function addCameraReadouts(
@@ -109,7 +153,7 @@ function createCameraGui(
   controls: OrbitControls,
   onEffectsChange: WeddingCameraControlsProps["onEffectsChange"],
 ): GUI {
-  const gui = new GUI({ container: container ?? undefined, title: "Cámara", width: 300 });
+  const gui = new GUI({ container: container ?? undefined, title: "Escena 3D", width: 320 });
   addEffectsControls(gui, onEffectsChange);
   addCameraReadouts(gui, camera, controls);
 
@@ -145,6 +189,10 @@ export function WeddingCameraControls({
 }: WeddingCameraControlsProps) {
   const { camera, gl } = useThree();
   const controlsRef = useRef<OrbitControls>(null);
+  const pointerTargetRef = useRef(new Vector2());
+  const pointerPositionRef = useRef(new Vector2());
+  const cameraSphericalRef = useRef(new Spherical());
+  const cameraOffsetRef = useRef(new Vector3());
 
   useEffect(() => {
     if (!(camera instanceof OrthographicCamera || camera instanceof PerspectiveCamera)) return;
@@ -152,7 +200,19 @@ export function WeddingCameraControls({
     const controls = new OrbitControls(camera, gl.domElement);
     configureOrbitControls(controls);
     controlsRef.current = controls;
+    const handlePointerMove = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse") return;
+
+      const bounds = gl.domElement.getBoundingClientRect();
+      pointerTargetRef.current.set(
+        MathUtils.clamp(((event.clientX - bounds.left) / bounds.width) * 2 - 1, -1, 1),
+        MathUtils.clamp(((event.clientY - bounds.top) / bounds.height) * 2 - 1, -1, 1),
+      );
+    };
+    const resetPointer = () => pointerTargetRef.current.set(0, 0);
     const preventContextMenu = (event: MouseEvent) => event.preventDefault();
+    gl.domElement.addEventListener("pointermove", handlePointerMove);
+    gl.domElement.addEventListener("pointerleave", resetPointer);
     gl.domElement.addEventListener("contextmenu", preventContextMenu);
     const gui = createCameraGui(
       guiContainerRef.current,
@@ -160,9 +220,9 @@ export function WeddingCameraControls({
       controls,
       onEffectsChange,
     );
-    gui.hide();
-
     return () => {
+      gl.domElement.removeEventListener("pointermove", handlePointerMove);
+      gl.domElement.removeEventListener("pointerleave", resetPointer);
       gl.domElement.removeEventListener("contextmenu", preventContextMenu);
       gui.destroy();
       controls.dispose();
@@ -170,6 +230,20 @@ export function WeddingCameraControls({
     };
   }, [camera, gl.domElement, guiContainerRef, onEffectsChange]);
 
-  useFrame(() => controlsRef.current?.update());
+  useFrame((_, delta) => {
+    const controls = controlsRef.current;
+    if (!controls) return;
+
+    const smoothing = 1 - Math.exp(-POINTER_SMOOTHING * delta);
+    const pointer = pointerPositionRef.current.lerp(pointerTargetRef.current, smoothing);
+    const spherical = cameraSphericalRef.current.copy(INITIAL_CAMERA_SPHERICAL);
+    spherical.theta -= pointer.x * MAX_HORIZONTAL_ROTATION;
+    spherical.phi += pointer.y * MAX_VERTICAL_ROTATION;
+
+    controls.object.position
+      .copy(cameraOffsetRef.current.setFromSpherical(spherical))
+      .add(INITIAL_CAMERA_TARGET);
+    controls.update();
+  });
   return null;
 }

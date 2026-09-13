@@ -7,6 +7,7 @@ import { WeddingCameraControls } from "./wedding-camera-controls";
 import { WEDDING_CAMERA_POSITION, WEDDING_CAMERA_ZOOM } from "./wedding-camera-settings";
 import { WeddingModel } from "./wedding-model";
 import {
+  GuiContainer,
   LoadingMessage,
   SceneSection,
 } from "./styles";
@@ -44,6 +45,7 @@ export function WeddingScene({ numberOfGuests }: WeddingSceneProps) {
   return (
     <SceneSection aria-label="Escena 3D de la boda">
       <LoadingMessage $isLoaded={isLoaded} role="status">Cargando escena</LoadingMessage>
+      <GuiContainer ref={guiContainerRef} />
       <Canvas
         camera={{
           position: WEDDING_CAMERA_POSITION,

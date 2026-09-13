@@ -54,7 +54,9 @@ export const GuiContainer = styled.div`
   top: 1rem;
   right: 1rem;
   z-index: 2;
+  max-height: calc(100% - 2rem);
   box-shadow: 0 8px 24px rgba(73, 47, 31, 0.12);
+  overflow-y: auto;
 
   .lil-gui.root {
     --background-color: rgba(35, 30, 27, 0.92);

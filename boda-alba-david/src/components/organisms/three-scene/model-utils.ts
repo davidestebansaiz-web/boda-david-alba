@@ -49,7 +49,13 @@ type AddLineArtOptions = {
   color: number;
   lineStrength: number;
   meshes: Mesh[];
+  opacity: number;
+  polygonOffset: boolean;
+  polygonOffsetFactor: number;
+  renderOrder: number;
   thresholdAngle: (mesh: Mesh) => number;
+  toneMapped: boolean;
+  transparent: boolean;
   visible: boolean;
 };
 
@@ -57,7 +63,13 @@ export function addLineArt({
   color,
   lineStrength,
   meshes,
+  opacity,
+  polygonOffset,
+  polygonOffsetFactor,
+  renderOrder,
   thresholdAngle,
+  toneMapped,
+  transparent,
   visible,
 }: AddLineArtOptions): () => void {
   const material = new LineMaterial({
@@ -65,9 +77,11 @@ export function addLineArt({
     depthTest: true,
     depthWrite: false,
     linewidth: lineStrength,
-    opacity: 1,
-    toneMapped: false,
-    transparent: true,
+    opacity,
+    polygonOffset,
+    polygonOffsetFactor,
+    toneMapped,
+    transparent,
     worldUnits: false,
   });
 
@@ -79,7 +93,7 @@ export function addLineArt({
 
     const lines = new LineSegments2(geometry, material);
     lines.frustumCulled = false;
-    lines.renderOrder = 20;
+    lines.renderOrder = renderOrder;
     lines.visible = visible;
     mesh.add(lines);
     return { lines, mesh };

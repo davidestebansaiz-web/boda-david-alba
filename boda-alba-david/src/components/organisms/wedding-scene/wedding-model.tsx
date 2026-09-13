@@ -5,16 +5,35 @@ import { Box3, DoubleSide, Mesh, Object3D, Texture, Vector3 } from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 import sceneUrl from "../../../assets/models/escena.glb?url";
-import { addLineArt, getMeshesByName, normalizeModel } from "../three-scene/model-utils";
+import { addLineArt, normalizeModel } from "../three-scene/model-utils";
+import type { LineArtSettings } from "../three-scene/scene-types";
 import { CharacterManager, type CharacterPart } from "./crowd/character-manager";
 
 const MODEL_Y_POSITION = -1.45;
-const LINE_ART_MESH_NAMES = new Set(["Cube", "Cube.001", "Cube.004", "ventana"]);
+// GLTFLoader removes dots from node names to keep them compatible with animation paths.
+const NON_LINE_ART_MESH_NAMES = new Set([
+  "Cube012",
+  "Cube013",
+  "Cube014",
+  "Cube015",
+  "Cube016",
+  "Cube017",
+  "Cube018",
+  "Cube019",
+  "Cube020",
+  "Cube021",
+  "Cube022",
+  "Cube023",
+  "Cube024",
+  "Cube025",
+  "tronco",
+  "tronco001",
+  "tronco002",
+  "suelo",
+  "sueloasfalto",
+]);
 
-type WeddingModelProps = {
-  lineArt: boolean;
-  lineColor: number;
-  lineStrength: number;
+type WeddingModelProps = LineArtSettings & {
   numberOfGuests: number;
   onLoaded: (houseCenter: Vector3) => void;
 };
@@ -51,21 +70,36 @@ function isHouseExterior(mesh: Mesh): boolean {
 
 export function WeddingModel({
   lineArt,
+  lineAngle,
   lineColor,
+  lineOpacity,
+  linePolygonOffset,
+  linePolygonOffsetFactor,
+  lineRenderOrder,
+  lineScreenspace,
   lineStrength,
+  lineToneMapped,
+  lineTransparent,
+  lineThresholdAngle,
   numberOfGuests,
   onLoaded,
 }: WeddingModelProps) {
   const gltf = useLoader(GLTFLoader, sceneUrl);
   const preparedModel = useMemo(() => {
     const normalizedModel = normalizeModel(gltf.scene);
-    const lineArtMeshes = getMeshesByName(normalizedModel.meshes, LINE_ART_MESH_NAMES);
-    const exteriorMeshes = normalizedModel.meshes.filter(isHouseExterior);
     const navigationMesh = getRequiredMesh(normalizedModel.model, "area");
     const characterParts: CharacterPart[] = [
       { mesh: getRequiredMesh(normalizedModel.model, "persona") },
       { mesh: getRequiredMesh(normalizedModel.model, "pelo") },
     ];
+    const characterPartMeshes = new Set(characterParts.map(({ mesh }) => mesh));
+    const visibleSceneMeshes = normalizedModel.meshes.filter(
+      (mesh) => mesh !== navigationMesh && !characterPartMeshes.has(mesh),
+    );
+    const lineArtMeshes = visibleSceneMeshes.filter(
+      (mesh) => !NON_LINE_ART_MESH_NAMES.has(mesh.name),
+    );
+    const exteriorMeshes = visibleSceneMeshes.filter(isHouseExterior);
 
     navigationMesh.material = Array.isArray(navigationMesh.material)
       ? navigationMesh.material.map((material) => material.clone())
@@ -94,7 +128,6 @@ export function WeddingModel({
     return {
       ...normalizedModel,
       characterParts,
-      exteriorMeshes,
       houseCenter,
       lineArtMeshes,
       navigationMesh,
@@ -107,10 +140,28 @@ export function WeddingModel({
       color: lineColor,
       lineStrength,
       meshes: preparedModel.lineArtMeshes,
-      thresholdAngle: (mesh) => (mesh.name === "ventana" ? 20 : 55),
+      opacity: lineOpacity,
+      polygonOffset: linePolygonOffset,
+      polygonOffsetFactor: linePolygonOffsetFactor,
+      renderOrder: lineRenderOrder,
+      thresholdAngle: (mesh) => (mesh.name === "ventana" ? 20 : lineThresholdAngle),
+      toneMapped: lineToneMapped,
+      transparent: lineTransparent,
       visible: lineArt,
     }),
-    [lineArt, lineColor, lineStrength, preparedModel.lineArtMeshes],
+    [
+      lineArt,
+      lineColor,
+      lineOpacity,
+      linePolygonOffset,
+      linePolygonOffsetFactor,
+      lineRenderOrder,
+      lineStrength,
+      lineThresholdAngle,
+      lineToneMapped,
+      lineTransparent,
+      preparedModel.lineArtMeshes,
+    ],
   );
 
   return (
@@ -120,19 +171,36 @@ export function WeddingModel({
         <CharacterManager
           area={preparedModel.navigationMesh}
           characterParts={preparedModel.characterParts}
+          lineArt={lineArt}
+          lineAngle={lineAngle}
+          lineColor={lineColor}
+          lineOpacity={lineOpacity}
+          linePolygonOffset={linePolygonOffset}
+          linePolygonOffsetFactor={linePolygonOffsetFactor}
+          lineRenderOrder={lineRenderOrder}
+          lineScreenspace={lineScreenspace}
+          lineStrength={lineStrength}
+          lineToneMapped={lineToneMapped}
+          lineTransparent={lineTransparent}
+          lineThresholdAngle={lineThresholdAngle}
           numberOfGuests={numberOfGuests}
         />,
         preparedModel.model,
       )}
-      {lineArt && preparedModel.exteriorMeshes.map((mesh) => (
+      {lineArt && preparedModel.lineArtMeshes.map((mesh) => (
         <Fragment key={mesh.uuid}>
           {createPortal(
             <Outlines
+              angle={lineAngle}
               color={lineColor}
-              opacity={1}
-              screenspace={false}
+              opacity={lineOpacity}
+              polygonOffset={linePolygonOffset}
+              polygonOffsetFactor={linePolygonOffsetFactor}
+              renderOrder={lineRenderOrder}
+              screenspace={lineScreenspace}
               thickness={lineStrength}
-              toneMapped={false}
+              toneMapped={lineToneMapped}
+              transparent={lineTransparent}
             />,
             mesh,
           )}

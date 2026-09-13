@@ -1,3 +1,4 @@
+import { Outlines } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useLayoutEffect, useMemo, useRef } from "react";
 import {
@@ -12,6 +13,7 @@ import {
 
 import { CharacterAgent } from "./character-agent";
 import { NavigationArea } from "./navigation-area";
+import type { LineArtSettings } from "../../three-scene/scene-types";
 
 const UP = new Vector3(0, 1, 0);
 const NO_SCALE = new Vector3(1, 1, 1);
@@ -21,7 +23,7 @@ export type CharacterPart = {
   mesh: Mesh;
 };
 
-type CharacterManagerProps = {
+type CharacterManagerProps = LineArtSettings & {
   area: Mesh;
   characterParts: CharacterPart[];
   numberOfGuests: number;
@@ -34,6 +36,17 @@ function normalizeGuestCount(value: number): number {
 export function CharacterManager({
   area,
   characterParts,
+  lineArt,
+  lineAngle,
+  lineColor,
+  lineOpacity,
+  linePolygonOffset,
+  linePolygonOffsetFactor,
+  lineRenderOrder,
+  lineScreenspace,
+  lineStrength,
+  lineToneMapped,
+  lineTransparent,
   numberOfGuests,
 }: CharacterManagerProps) {
   const guestCount = normalizeGuestCount(numberOfGuests);
@@ -111,7 +124,22 @@ export function CharacterManager({
           dispose={null}
           frustumCulled={false}
           receiveShadow
-        />
+        >
+          {lineArt && (
+            <Outlines
+              angle={lineAngle}
+              color={lineColor}
+              opacity={lineOpacity}
+              polygonOffset={linePolygonOffset}
+              polygonOffsetFactor={linePolygonOffsetFactor}
+              renderOrder={lineRenderOrder}
+              screenspace={lineScreenspace}
+              thickness={lineStrength}
+              toneMapped={lineToneMapped}
+              transparent={lineTransparent}
+            />
+          )}
+        </instancedMesh>
       ))}
     </group>
   );
