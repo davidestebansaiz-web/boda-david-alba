@@ -11,7 +11,7 @@ import { CharacterManager, type CharacterPart } from "./crowd/character-manager"
 
 const MODEL_Y_POSITION = -1.45;
 // GLTFLoader removes dots from node names to keep them compatible with animation paths.
-const NON_LINE_ART_MESH_NAMES = new Set([
+const TREE_MESH_NAMES = new Set([
   "Cube012",
   "Cube013",
   "Cube014",
@@ -29,6 +29,8 @@ const NON_LINE_ART_MESH_NAMES = new Set([
   "tronco",
   "tronco001",
   "tronco002",
+]);
+const GROUND_MESH_NAMES = new Set([
   "suelo",
   "sueloasfalto",
 ]);
@@ -91,13 +93,14 @@ export function WeddingModel({
     const characterParts: CharacterPart[] = [
       { mesh: getRequiredMesh(normalizedModel.model, "persona") },
       { mesh: getRequiredMesh(normalizedModel.model, "pelo") },
+      { hoverOnly: true, mesh: getRequiredMesh(normalizedModel.model, "bocadillo") },
     ];
     const characterPartMeshes = new Set(characterParts.map(({ mesh }) => mesh));
     const visibleSceneMeshes = normalizedModel.meshes.filter(
       (mesh) => mesh !== navigationMesh && !characterPartMeshes.has(mesh),
     );
     const lineArtMeshes = visibleSceneMeshes.filter(
-      (mesh) => !NON_LINE_ART_MESH_NAMES.has(mesh.name),
+      (mesh) => !GROUND_MESH_NAMES.has(mesh.name) && !TREE_MESH_NAMES.has(mesh.name),
     );
     const exteriorMeshes = visibleSceneMeshes.filter(isHouseExterior);
 

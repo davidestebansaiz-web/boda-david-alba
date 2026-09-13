@@ -21,8 +21,15 @@ function SceneLighting() {
         castShadow
         intensity={2.8}
         position={[4, 7, 5]}
-        shadow-normalBias={0.04}
-        shadow-mapSize={[1024, 1024]}
+        shadow-bias={-0.0002}
+        shadow-camera-bottom={-4}
+        shadow-camera-far={20}
+        shadow-camera-left={-4}
+        shadow-camera-near={0.1}
+        shadow-camera-right={4}
+        shadow-camera-top={4}
+        shadow-mapSize={[2048, 2048]}
+        shadow-normalBias={0.02}
       />
     </>
   );
@@ -55,7 +62,7 @@ export function WeddingScene({ numberOfGuests }: WeddingSceneProps) {
         }}
         dpr={[1, 2]}
         orthographic
-        shadows
+        shadows="basic"
       >
         <SceneLighting />
         <Suspense fallback={null}>
