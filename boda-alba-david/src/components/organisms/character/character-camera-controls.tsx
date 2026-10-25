@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import { OrthographicCamera, PerspectiveCamera, Vector3 } from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-const INITIAL_CAMERA_POSITION = new Vector3(0, 0, 5.97);
+// Un encuadre algo más abierto evita cortar pelo, orejas o barbilla en los avatares.
+const INITIAL_CAMERA_POSITION = new Vector3(0, 0, 5);
 const INITIAL_CAMERA_ZOOM = 50;
 
 type CharacterCameraControlsProps = {
@@ -34,7 +35,7 @@ function createCameraGui(camera: OrthographicCamera | PerspectiveCamera): GUI {
     },
     restablecer: () => {
       camera.position.copy(INITIAL_CAMERA_POSITION);
-      if (camera instanceof PerspectiveCamera) camera.fov = 42;
+      if (camera instanceof PerspectiveCamera) camera.fov = 40;
       if (camera instanceof OrthographicCamera) camera.zoom = INITIAL_CAMERA_ZOOM;
       camera.updateProjectionMatrix();
     },

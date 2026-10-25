@@ -1,9 +1,10 @@
-import { Hero } from "../components/molecules/hero";
 import { WeddingIntro } from "../components/molecules/wedding-intro";
-import { RsvpByToken } from "../components/organisms/rsvp-by-token";
-import { WeddingChats } from "../components/organisms/wedding-chats";
+import { WeddingInformation } from "../components/molecules/wedding-information";
+// import { Hero } from "../components/molecules/hero";
+// import { RsvpByToken } from "../components/organisms/rsvp-by-token";
 import { WeddingScene } from "../components/organisms/wedding-scene";
-import { AppShell, ExistingSections } from "./styles";
+import { AppShell } from "./styles";
+// import { ExistingSections } from "./styles";
 
 // Sustituir por el valor del endpoint cuando esté disponible.
 const numberOfGuests = 12;
@@ -13,11 +14,12 @@ export default function App() {
     <AppShell>
       <WeddingIntro />
       <WeddingScene numberOfGuests={numberOfGuests} />
-      <WeddingChats />
+      <WeddingInformation />
+      {/* El anterior flujo de asistencia por token queda desactivado temporalmente.
       <ExistingSections>
         <Hero />
         <RsvpByToken />
-      </ExistingSections>
+      </ExistingSections> */}
     </AppShell>
   );
 }

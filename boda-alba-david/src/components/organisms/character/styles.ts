@@ -2,9 +2,8 @@ import styled from "styled-components";
 
 export const CharacterSceneSection = styled.section`
   position: relative;
-  width: 300px;
-  height: 300px;
-  min-height: 200px;
+  width: 200px;
+  height: 200px;
   overflow: hidden;
 
   canvas {

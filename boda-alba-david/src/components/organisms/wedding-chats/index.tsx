@@ -7,7 +7,7 @@ const currentConversations: ChatOption[] = [
     id: "welcome",
     title: "Chat 1",
     children: <p>Content for Chat 1</p>,
-    avatar: <Character />,
+    avatar: <Character facing="right" />,
   },
 ];
 
@@ -16,7 +16,7 @@ const invertedConversations: ChatOption[] = [
     id: "welcome-inverted",
     title: "Chat 2",
     children: <p>Content for Chat 2</p>,
-    avatar: <Character />,
+    avatar: <Character facing="left" model="personaje2" />,
     invert: true,
   },
 ];

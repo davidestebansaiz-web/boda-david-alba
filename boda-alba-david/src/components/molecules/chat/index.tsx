@@ -13,7 +13,7 @@ export default function Chat({ title, children, avatar, invert = false }: ChatPr
   return (
     <ChatContainer $invert={invert}>
       {avatar && <Avatar $invert={invert}>{avatar}</Avatar>}
-      <MessageBubble>
+      <MessageBubble $invert={invert}>
         <Title $invert={invert}>{title}</Title>
         <Content $invert={invert}>{children}</Content>
       </MessageBubble>

@@ -12,7 +12,7 @@ position: absolute;
 
 export const IntroTitle = styled.h1`
   margin: 0;
-  color: white;
+  color: #9f563a;;
   font-family: "Satisfy", cursive;
   font-size: clamp(3.25rem, 8vw, 6rem);
   font-weight: 400;
@@ -22,7 +22,7 @@ export const IntroTitle = styled.h1`
 export const IntroSubtitle = styled.p`
   max-width: 720px;
   margin: clamp(1rem, 2vw, 1.5rem) auto 0;
-  color: white;
+  color: black;
   font-size: clamp(1.05rem, 2.2vw, 1.4rem);
   line-height: 1.6;
 `;

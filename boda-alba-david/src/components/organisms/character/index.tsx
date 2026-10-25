@@ -3,8 +3,10 @@ import { Suspense } from "react";
 
 import { useSceneState } from "../three-scene/use-scene-state";
 import { CharacterCameraControls } from "./character-camera-controls";
-import { CharacterModel } from "./character-model";
+import { CharacterModel, type CharacterModelVariant } from "./character-model";
 import { CharacterSceneSection, LoadingMessage } from "./styles";
+
+export type CharacterFacing = "left" | "right";
 
 function CharacterLighting() {
   return (
@@ -29,20 +31,25 @@ function CharacterLighting() {
   );
 }
 
-export function Character() {
+type CharacterProps = {
+  facing?: CharacterFacing;
+  model?: CharacterModelVariant;
+};
+
+export function Character({ facing = "right", model = "personaje" }: CharacterProps) {
   const { cameraTarget, effects, isLoaded, handleModelLoaded } = useSceneState();
 
   return (
     <CharacterSceneSection aria-label="Personaje 3D">
       <LoadingMessage $isLoaded={isLoaded} role="status">Cargando personaje</LoadingMessage>
       <Canvas
-        camera={{ position: [-3.65, -0.99, 8.97], fov: 35, near: 0.1, far: 100 }}
+        camera={{ position: [0, 0, 5], fov: 40, near: 0.1, far: 100 }}
         dpr={[1, 2]}
         shadows="basic"
       >
         <CharacterLighting />
         <Suspense fallback={null}>
-          <CharacterModel {...effects} onLoaded={handleModelLoaded} />
+          <CharacterModel {...effects} facing={facing} model={model} onLoaded={handleModelLoaded} />
         </Suspense>
         {cameraTarget && <CharacterCameraControls initialTarget={cameraTarget} />}
       </Canvas>

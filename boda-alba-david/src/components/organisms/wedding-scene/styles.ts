@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 export const SceneSection = styled.section`
+background: #ffffff;
   position: relative;
   width: 100%;
   min-height: 70vh;
@@ -73,3 +74,4 @@ export const GuiContainer = styled.div`
     right: 0.75rem;
   }
 `;
+

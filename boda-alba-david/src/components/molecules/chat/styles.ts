@@ -7,16 +7,29 @@ export const ChatContainer = styled.article<{ $invert: boolean }>`
   padding: 20px;
 `;
 
-export const MessageBubble = styled.div`
+export const MessageBubble = styled.div<{ $invert: boolean }>`
+  position: relative;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 68px;
-  border: 10px solid rgba(0, 0, 0, 0.2);
-  border-radius: 170px;
-  background: linear-gradient(130deg, rgba(255, 255, 255, 0.8), rgba(246, 234, 223, 0.8));
+  padding: 20px;
+  border-radius: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: orange;
+  color: white;
+  &:after {
+    content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 19px;
+  border-color: ${({ $invert }) => $invert ? "transparent transparent transparent orange" : "transparent orange transparent transparent"};
+  ${({ $invert }) => $invert ? "right: -32px;" : "left: -32px;"};
+  top: 24px;
+}
+  }
 `;
 
 const AlignedContent = styled.div<{ $invert: boolean }>`
