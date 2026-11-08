@@ -4,6 +4,7 @@ import { defineConfig } from "vitest/config";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: '/boda-david-alba/',
   server: {
     proxy: {
       "/public": "http://localhost:3000",
