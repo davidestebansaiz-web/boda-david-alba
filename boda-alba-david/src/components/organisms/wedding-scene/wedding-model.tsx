@@ -62,6 +62,10 @@ function configureTransparentTextures(meshes: Mesh[]): void {
   });
 }
 
+function isHousePlantMesh(mesh: Mesh): boolean {
+  return mesh.name.startsWith("hierbaBase");
+}
+
 function isHouseExterior(mesh: Mesh): boolean {
   const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
   const belongsToHouse = materials.some(
@@ -100,7 +104,9 @@ export function WeddingModel({
       (mesh) => mesh !== navigationMesh && !characterPartMeshes.has(mesh),
     );
     const lineArtMeshes = visibleSceneMeshes.filter(
-      (mesh) => !GROUND_MESH_NAMES.has(mesh.name) && !TREE_MESH_NAMES.has(mesh.name),
+      (mesh) => !GROUND_MESH_NAMES.has(mesh.name)
+        && !TREE_MESH_NAMES.has(mesh.name)
+        && !isHousePlantMesh(mesh),
     );
     const exteriorMeshes = visibleSceneMeshes.filter(isHouseExterior);
 
