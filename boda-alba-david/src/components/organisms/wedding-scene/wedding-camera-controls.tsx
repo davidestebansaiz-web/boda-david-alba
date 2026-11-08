@@ -16,6 +16,7 @@ import { DEFAULT_SCENE_EFFECTS, type SceneEffectsSettings } from "../three-scene
 import {
   WEDDING_CAMERA_POSITION,
   WEDDING_CAMERA_TARGET,
+  WEDDING_MOBILE_CAMERA_ZOOM,
   WEDDING_CAMERA_ZOOM,
 } from "./wedding-camera-settings";
 
@@ -187,7 +188,7 @@ export function WeddingCameraControls({
   guiContainerRef,
   onEffectsChange,
 }: WeddingCameraControlsProps) {
-  const { camera, gl } = useThree();
+  const { camera, gl, size } = useThree();
   const controlsRef = useRef<OrbitControls>(null);
   const pointerTargetRef = useRef(new Vector2());
   const pointerPositionRef = useRef(new Vector2());
@@ -233,6 +234,14 @@ export function WeddingCameraControls({
       controlsRef.current = null;
     };
   }, [camera, gl.domElement, guiContainerRef, onEffectsChange]);
+
+  useEffect(() => {
+    const controls = controlsRef.current;
+    if (!(controls?.object instanceof OrthographicCamera)) return;
+
+    controls.object.zoom = size.width <= 640 ? WEDDING_MOBILE_CAMERA_ZOOM : WEDDING_CAMERA_ZOOM;
+    controls.object.updateProjectionMatrix();
+  }, [size.width]);
 
   useFrame((_, delta) => {
     const controls = controlsRef.current;

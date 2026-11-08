@@ -1,13 +1,17 @@
 import styled from "styled-components";
 
 export const IntroSection = styled.header`
-position: absolute;
+  position: absolute;
   z-index: 1;
   width: min(100%, 960px);
   margin: 0 auto;
   padding: clamp(3rem, 7vw, 5.5rem) clamp(1.25rem, 4vw, 2.5rem)
     clamp(2.5rem, 5vw, 4rem);
   text-align: center;
+
+  @media (max-width: 640px) {
+    position: relative;
+  }
 `;
 
 export const IntroTitle = styled.h1`

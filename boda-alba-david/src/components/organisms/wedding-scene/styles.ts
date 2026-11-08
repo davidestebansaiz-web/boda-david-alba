@@ -16,6 +16,14 @@ export const SceneSection = styled.section`
   }
 
   canvas:active { cursor: grabbing; }
+
+  @media (max-width: 640px) {
+    min-height: 55svh;
+
+    canvas {
+      min-height: 55svh;
+    }
+  }
 `;
 
 export const LoadingMessage = styled.p<{ $isLoaded: boolean }>`
@@ -70,8 +78,7 @@ export const GuiContainer = styled.div`
   }
 
   @media (max-width: 640px) {
-    top: 0.75rem;
-    right: 0.75rem;
+    display: none;
   }
 `;
 

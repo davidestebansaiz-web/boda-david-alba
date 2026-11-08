@@ -11,6 +11,10 @@ export const InformationSection = styled.div`
   margin-top: -288px;
   z-index: 2;
   position: relative;
+
+  @media (max-width: 640px) {
+    margin-top: 0;
+  }
 `;
 
 export const IntroSection = styled.section`
