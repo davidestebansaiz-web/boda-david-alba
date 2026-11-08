@@ -58,11 +58,7 @@ export function WeddingInformation() {
         <SectionEyebrow>Confirma tu asistencia</SectionEyebrow>
         <SectionHeading id="attendance-title">Nos encantará contar contigo</SectionHeading>
         <p>Cuéntanos si podrás venir y ayúdanos a preparar cada detalle para ti.</p>
-        <AttendanceButton
-          href="https://forms.gle/PpqSoUKx6LrBVcM88"
-          rel="noreferrer"
-          target="_blank"
-        >
+        <AttendanceButton as="button" disabled type="button">
           Ir al formulario de asistencia
         </AttendanceButton>
       </AttendanceSection>

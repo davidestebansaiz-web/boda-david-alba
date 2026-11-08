@@ -203,9 +203,15 @@ export const AttendanceButton = styled.a`
   text-decoration: none;
   transition: transform 160ms ease, box-shadow 160ms ease;
 
-  &:hover {
+  &:not(:disabled):hover {
     box-shadow: 0 11px 24px rgba(35, 63, 119, 0.28);
     transform: translateY(-2px);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+    box-shadow: none;
   }
 
   &:focus-visible {

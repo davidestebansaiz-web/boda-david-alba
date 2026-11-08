@@ -53,6 +53,11 @@ export function CharacterCameraControls({ initialTarget }: CharacterCameraContro
     if (!(camera instanceof OrthographicCamera || camera instanceof PerspectiveCamera)) return;
 
     const controls = new OrbitControls(camera, gl.domElement);
+    // OrbitControls fuerza `touch-action: none`; restauramos el desplazamiento vertical de la página.
+    if (controls.domElement) controls.domElement.style.touchAction = "pan-y";
+    controls.enableRotate = false;
+    controls.enablePan = false;
+    controls.enableZoom = false;
     camera.position.copy(INITIAL_CAMERA_POSITION);
     controlsRef.current = controls;
     const gui = createCameraGui(camera);

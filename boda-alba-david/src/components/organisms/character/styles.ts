@@ -10,11 +10,11 @@ export const CharacterSceneSection = styled.section`
     display: block;
     width: 100% !important;
     height: 100% !important;
-    cursor: grab;
+    cursor: default;
     touch-action: pan-y;
   }
 
-  canvas:active { cursor: grabbing; }
+  canvas:active { cursor: default; }
 `;
 
 export const LoadingMessage = styled.p<{ $isLoaded: boolean }>`

@@ -198,6 +198,8 @@ export function WeddingCameraControls({
     if (!(camera instanceof OrthographicCamera || camera instanceof PerspectiveCamera)) return;
 
     const controls = new OrbitControls(camera, gl.domElement);
+    // OrbitControls fuerza `touch-action: none`; restauramos el desplazamiento vertical de la página.
+    if (controls.domElement) controls.domElement.style.touchAction = "pan-y";
     configureOrbitControls(controls);
     controlsRef.current = controls;
     const handlePointerMove = (event: PointerEvent) => {
@@ -214,17 +216,19 @@ export function WeddingCameraControls({
     gl.domElement.addEventListener("pointermove", handlePointerMove);
     gl.domElement.addEventListener("pointerleave", resetPointer);
     gl.domElement.addEventListener("contextmenu", preventContextMenu);
-    const gui = createCameraGui(
-      guiContainerRef.current,
-      camera,
-      controls,
-      onEffectsChange,
-    );
+    const gui = import.meta.env.DEV
+      ? createCameraGui(
+        guiContainerRef.current,
+        camera,
+        controls,
+        onEffectsChange,
+      )
+      : null;
     return () => {
       gl.domElement.removeEventListener("pointermove", handlePointerMove);
       gl.domElement.removeEventListener("pointerleave", resetPointer);
       gl.domElement.removeEventListener("contextmenu", preventContextMenu);
-      gui.destroy();
+      gui?.destroy();
       controls.dispose();
       controlsRef.current = null;
     };

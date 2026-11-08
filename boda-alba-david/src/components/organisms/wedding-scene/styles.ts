@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const SceneSection = styled.section`
-background: #ffffff;
+  background: #ffffff7d;
   position: relative;
   width: 100%;
   min-height: 70vh;
